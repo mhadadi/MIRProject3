@@ -1,10 +1,13 @@
 import scrapy
 from bs4 import BeautifulSoup
+from scrapy import statscollectors
+from scrapy.exceptions import CloseSpider
+from scrapy.spiders import BaseSpider
 
 
-class WikiLinkSpider(scrapy.Spider):
+class WikiLinkSpider(BaseSpider):
     name = "wikilinks"
-    COUNT_MAX = 100  #TODO : 1000 pishfarze
+    COUNT_MAX = 50  #TODO : 1000 pishfarze
     OUT_MAX = 10
     count = 0
 
@@ -24,39 +27,43 @@ class WikiLinkSpider(scrapy.Spider):
 
     def parse(self, response):
         # use lxml to get decent HTML parsing speed
+        print("stats:", self.crawler.stats.get_stats()['response_received_count'])
+        if self.crawler.stats.get_stats()['response_received_count'] >= self.COUNT_MAX:
+            raise CloseSpider(reason="API usage exceeded")
+
         soup = BeautifulSoup(response.text, 'lxml')
         title = soup.title.string
         abstract = ''
         main_text = ''
-        print("title: ", title)
+        # print("title: ", title)
         for content_text in soup.find_all(attrs={'id': 'mw-content-text'}):
             paragraphs = content_text.find_all('p')
             abstract = paragraphs[0].get_text()
-            print ("intro: ", abstract)
+            # print ("intro: ", abstract)
             for parag in paragraphs:
-                print("parent of p: ", [parent.name for parent in parag.parents])
-                main_text += (' ' + parag.get_text())
+                if parag.parent.get('id') == 'mw-content-text':
+                    print("parent of p: ", [parent for parent in parag.parents])
+                    main_text += (' ' + parag.get_text())
             yield {
                 'title': title,
                 'abstract': abstract,
                 'main_text': main_text
             }
-            # finding links
-            out_degree = 0;
-            for link in content_text.find_all('a'):   #TODO: change to input parameter
-                print("parent of link: ", [parent.name for parent in link.parents])
-                print("count " ,  self.count)
-                if link.parent.name == 'p':
-                    print ("in if by parent: ", link.parent.name)
-                    if self.count < self.COUNT_MAX:
-                        next_page = link.get('href')
-                        self.count += 1
-                        out_degree +=1
 
+            # finding links
+            out_degree = 0
+            for link in content_text.find_all('a'):   #TODO: change to input parameter
+                # print("parent of link: ", [parent.name for parent in link.parents])
+                # print("count " ,  self.count)
+                if link.parent.name == 'p':
+                    next_page = link.get('href')
+                    self.count += 1
+                    out_degree +=1
+                    if self.crawler.stats.get_stats()['response_received_count'] < self.COUNT_MAX:
                         yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
 
-                if out_degree >= self.OUT_MAX:
-                    break
+                    if out_degree >= self.OUT_MAX:
+                        break
 
 
 

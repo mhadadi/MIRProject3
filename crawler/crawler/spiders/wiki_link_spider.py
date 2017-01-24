@@ -6,9 +6,9 @@ from scrapy.exceptions import CloseSpider
 
 class WikiLinkSpider(scrapy.Spider):
     name = "wikilinks"
-    COUNT_MAX = 100  # TODO : 1000 pishfarze
+    COUNT_MAX = 50  # TODO : 1000 pishfarze
     OUT_MAX = 10
-    count = 0
+    count=0
 
     def start_requests(self):
         urls = [
@@ -31,31 +31,50 @@ class WikiLinkSpider(scrapy.Spider):
         # print("title: ", title)
         for content_text in soup.find_all(attrs={'id': 'mw-content-text'}):
             paragraphs = content_text.find_all('p')
+            links = content_text.find_all('a')
+            info = content_text.find(attrs={'class': 'infobox'})
+            # print("info: ", info)
             abstract = paragraphs[0].get_text()
-            print ("abstract: ", abstract)
+            # print ("abstract: ", abstract)
             for parag in paragraphs:
                 if parag.parent.get('id') == 'mw-content-text':
 
 
                     # print("parent of p: ", [parent.get('id') for parent in parag.parents])
                     main_text += (' ' + parag.get_text())
-            yield {
-                'title': title,
-                'abstract': abstract,
-                'main_text': main_text
-            }
 
             # finding links
             out_degree = 0
-            for link in content_text.find_all('a'):  # TODO: change to input parameter
+            out_links = []
+            for link in links:  # TODO: change to input parameter
                 # print("parent of link: ", [parent.name for parent in link.parents])
                 # print("count " ,  self.count)
                 if link.parent.name == 'p':
                     next_page = link.get('href')
-                    self.count += 1
                     out_degree += 1
                     if self.crawler.stats.get_stats()['response_received_count'] < self.COUNT_MAX:
+                        out_links.append(response.urljoin(next_page))
                         yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
 
                     if out_degree >= self.OUT_MAX:
                         break
+
+            info_box = {}
+            if info:
+                for table_row in info.find_all('tr'):
+                    # print("table row: ", table_row)
+                    # print ("td: ", table_row.find('td'))
+                    td = table_row.find('td')
+                    th = table_row.find('th')
+                    if th and td:
+                        info_box[th.get_text()] = td.get_text()
+            print('info_box: ',self.count, " ", info_box)
+            self.count+=1
+            #yield data
+            yield {
+                'title': title,
+                'abstract': abstract,
+                'main_text': main_text,
+                'out_link': out_links,
+                'info_box': info_box,
+            }

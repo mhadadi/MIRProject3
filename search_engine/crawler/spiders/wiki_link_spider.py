@@ -20,14 +20,16 @@ class WikiLinkSpider(scrapy.Spider):
 
     def save_data_as_json(self, data):
         with open("json_files/file" + str(self.scraped_count) + '.json', 'w') as f:
-            json.dump(data, f, encoding='utf-8')
+            # json.dump(data, f, encoding='utf-8')
+            json.dump(data, f)
+
 
     def parse(self, response):
-        # print("stats:", self.crawler.stats.get_stats()['response_received_count'])
-        # print("stats:", self.crawler.stats.get_stats())
+        # print("stats:", self.search_engine.stats.get_stats()['response_received_count'])
+        # print("stats:", self.search_engine.stats.get_stats())
         if self.crawler.stats.get_stats()['response_received_count'] >= self.COUNT_MAX and \
                         self.scraped_count>=self.COUNT_MAX:
-                        # self.crawler.stats.get_stats()['item_scraped_count'] >= self.COUNT_MAX:
+                        # self.search_engine.stats.get_stats()['item_scraped_count'] >= self.COUNT_MAX:
             raise CloseSpider(reason="API usage exceeded")
 
         soup = BeautifulSoup(response.text, 'lxml')
@@ -41,7 +43,7 @@ class WikiLinkSpider(scrapy.Spider):
             info = content_text.find(attrs={'class': 'infobox'})
             # print("info: ", info)
             abstract = paragraphs[0].get_text()
-            # print ("abstract: ", abstract)
+            print ("abstract: ", abstract)
             for parag in paragraphs:
                 if parag.parent.get('id') == 'mw-content-text':
                     # print("parent of p: ", [parent.get('id') for parent in parag.parents])

@@ -3,13 +3,16 @@ import os
 
 import requests
 
+from constants import ES_CLIENT,INDEX_NAME
+
+
 # start elastic server
 from constants import INDEX_NAME, ES_CLIENT
 
 MAP_URL_TO_ID={}
 MAP_ID_TO_URL={}
 def make_index():
-    r = requests.get('http://localhost:9200')
+    # r = requests.get('http://localhost:9200')
     doc_id = 1
 
     # indexing every jsons
@@ -28,7 +31,6 @@ def make_index():
             MAP_URL_TO_ID[jfile["curr_link"]]=doc_id
 
             doc_id = doc_id + 1
-
     return doc_id-1
 
 #deleting index
@@ -37,6 +39,8 @@ def delet_index():
 
 
 TOTAL_DOC_NUMBER = make_index()
+#page rank
+
 
 
 

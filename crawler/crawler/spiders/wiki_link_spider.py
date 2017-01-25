@@ -46,10 +46,12 @@ class WikiLinkSpider(scrapy.Spider):
             links = content_text.find_all('a')
             info = content_text.find(attrs={'class': 'infobox'})
             # print("info: ", info)
-            abstract = paragraphs[0].get_text()
-            print ("abstract: ", abstract)
+            abstract = ""
             for parag in paragraphs:
                 if parag.parent.get('id') == 'mw-content-text':
+                    if not abstract:
+                        abstract = parag.get_text()
+                        print("abstract: ", abstract)
                     # print("parent of p: ", [parent.get('id') for parent in parag.parents])
                     main_text += (' ' + parag.get_text())
 

@@ -39,7 +39,8 @@ def delet_index():
 
 
 TOTAL_DOC_NUMBER = make_index()
-#page rank
+
+# print("IT is a test",ES_CLIENT.get(index=INDEX_NAME, doc_type='article', id=2 , ignore=[400,404]))
 
 
 

@@ -9,7 +9,7 @@ class WikiLinkSpider(scrapy.Spider):
     name = "wikilinks"
     COUNT_MAX = 50  # TODO : 1000 pishfarze
     OUT_MAX = 10
-    scraped_count=0
+    scraped_count = 0
 
     def start_requests(self):
         urls = [
@@ -23,20 +23,18 @@ class WikiLinkSpider(scrapy.Spider):
             # json.dump(data, f, encoding='utf-8')
             json.dump(data, f)
 
-
     def parse(self, response):
         # print("stats:", self.crawler.stats.get_stats()['response_received_count'])
         # print("stats:", self.crawler.stats.get_stats())
         if self.crawler.stats.get_stats()['response_received_count'] >= self.COUNT_MAX and \
-                        self.scraped_count>=self.COUNT_MAX:
-                        # self.crawler.stats.get_stats()['item_scraped_count'] >= self.COUNT_MAX:
+                        self.scraped_count >= self.COUNT_MAX:
+            # self.crawler.stats.get_stats()['item_scraped_count'] >= self.COUNT_MAX:
             raise CloseSpider(reason="API usage exceeded")
 
         soup = BeautifulSoup(response.text, 'lxml')
         # title = soup.title.string
         # print("aaaaa",soup.find(attrs={"id":"firstHeading"}).get_text())
-        title=soup.find(attrs={"id":"firstHeading"}).get_text()
-
+        title = soup.find(attrs={"id": "firstHeading"}).get_text()
 
         abstract = ''
         main_text = ''
@@ -91,5 +89,5 @@ class WikiLinkSpider(scrapy.Spider):
                 'out_links': out_links,
                 'info_box': info_box,
             }
-            self.scraped_count+=1
+            self.scraped_count += 1
             self.save_data_as_json(data=data)

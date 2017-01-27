@@ -11,3 +11,9 @@ OUT_LINKS = "out_links"
 DEFAULT_TYPE = "article"
 
 VOCAB = []
+MAP_ID_TO_URL = {}
+MAP_URL_TO_ID = {}
+
+
+def get_doc_id_list():
+    return MAP_ID_TO_URL.keys()

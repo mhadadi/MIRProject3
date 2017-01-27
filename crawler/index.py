@@ -1,6 +1,8 @@
 import json
 import os
 
+from elasticsearch.exceptions import ElasticsearchException
+
 from constants import *
 
 
@@ -15,12 +17,16 @@ def make_index():
         with open("json_files/" + tmp_file, 'r') as f:
             jfile = json.load(f)
             # print("the content of json:", jfile)
-            ES_CLIENT.index(index=INDEX_NAME, doc_type='article', id=doc_id, body=jfile, ignore=400)
-            print("index is build " + str(doc_id))
-            # print(ES_CLIENT.get(index=INDEX_NAME, doc_type='article', id=doc_id , ignore=[400,404]))
-            MAP_ID_TO_URL[doc_id] = jfile["curr_link"]
-            MAP_URL_TO_ID[jfile["curr_link"]] = doc_id
-            doc_id += 1
+            try:
+                ES_CLIENT.index(index=INDEX_NAME, doc_type='article', id=doc_id, body=jfile)
+                print("index is build " + str(doc_id))
+                # print(ES_CLIENT.get(index=INDEX_NAME, doc_type='article', id=doc_id , ignore=[400,404]))
+                MAP_ID_TO_URL[doc_id] = jfile["curr_link"]
+                MAP_URL_TO_ID[jfile["curr_link"]] = doc_id
+                doc_id += 1
+            except ElasticsearchException as es1:
+                print "error indexing " + str(doc_id)
+
     return doc_id - 1
 
 

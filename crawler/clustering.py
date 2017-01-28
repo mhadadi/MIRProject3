@@ -17,7 +17,7 @@ def clustering(k_upper_bound, theta, landa, alpha, tf_vector):
         for doc_id in clusters[cluster_id]:
                 with open("json_files/" + MAP_ID_TO_FILE_NAME[doc_id], 'r') as f:
                     data = json.load(f)
-                print (MAP_ID_TO_FILE_NAME[doc_id], doc_id, cluster_id)
+                print MAP_ID_TO_FILE_NAME[doc_id], doc_id, cluster_id
                 data["cluster_id"] = cluster_id
                 # data["cluster_title"] = assign_cluster_title(clusters[cluster_id], cluster_id)
 
@@ -32,10 +32,10 @@ def select_first_mean_points(k, tf_vector):
     try:
         rand_doc_id = random.sample(range(1, len(get_doc_id_list()) + 1), k)
     except ValueError:
-        print ('Sample size exceeded population size.')
+        print 'Sample size exceeded population size.'
     for i in range(k):
 
-        print ("first rand doc id: " + str(rand_doc_id[i]))
+        print "first rand doc id: " + str(rand_doc_id[i])
         first_points.append(tf_vector[rand_doc_id[i]])
     return first_points
 
@@ -52,8 +52,8 @@ def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
         clusters, j_cost = k_means(k, theta, tf_vector)
         j_cost += landa * k
         print ("trying k=", str(k), "...")
-        print (abs(cost_list[-1] - j_cost))
-        print (j_cost)
+        print abs(cost_list[-1] - j_cost)
+        print j_cost
         if abs(cost_list[-1] - j_cost) < alpha: # todo: change if needed!
             cost_list.append(j_cost)
             return prev_clusters, k-1, cost_list
@@ -83,6 +83,7 @@ def value(dic, key):
 # Euclidean distance
 def compute_distance(vector, miu):
     if not miu:
+        print "no miuuu"
         return Inf
     key_union = list(set(vector.keys()) | set(miu.keys()))
     dist = 0
@@ -116,8 +117,8 @@ def k_means(k, theta, tf_vector):
     prev_cost = 0
     next_cost = Inf
     doc_id_list = get_doc_id_list()
-    print (doc_id_list)
-    print (tf_vector.keys())
+    print doc_id_list
+    print tf_vector.keys()
     iterate = 0
     clusters = dict()
     while abs(prev_cost-next_cost) > theta:

@@ -1,3 +1,5 @@
+import os
+
 from elasticsearch import Elasticsearch
 
 ES_CLIENT = Elasticsearch(hosts=[{'host': 'localhost', 'port': 9200}], timeout=180)
@@ -13,6 +15,9 @@ DEFAULT_TYPE = "article"
 VOCAB = []
 MAP_ID_TO_URL = {}
 MAP_URL_TO_ID = {}
+MAP_ID_TO_FILE_NAME = {}
+
+FILE_LIST = os.listdir("json_files/")
 
 
 def get_doc_id_list():

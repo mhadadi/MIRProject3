@@ -45,9 +45,8 @@ def calculate_pagerank(alpha):
     p=build_pmatrix(alpha)
     pagerank_vector=find_eigenvector(p)
     pagerank_vector= pagerank_vector.tolist()
-    file_list = os.listdir("json_files/")
     i=0
-    for tmp_file in file_list:
+    for tmp_file in FILE_LIST:
         with open("json_files/" + tmp_file, 'r') as f:
             data = json.load(f)
         print("aaa",f.name , i )

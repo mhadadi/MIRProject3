@@ -1,4 +1,5 @@
 # todo:
+import json
 import random
 from math import sqrt
 from random import randrange
@@ -8,8 +9,23 @@ from numpy.core.numeric import Inf
 from constants import *
 
 
+def assign_cluster_title(doc_id_list_in_cluster, cluster_id):
+    pass
+
+
 def clustering(k_upper_bound, theta, landa, alpha, tf_vector):
-    return compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector)
+    clusters, k_star, cost_list = compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector)
+    for cluster_id in clusters.keys():
+        for doc_id in clusters[cluster_id]:
+                with open("json_files/file" + str(doc_id) + ".json", 'r') as f:
+                    data = json.load(f)
+
+                data["cluster_id"] = cluster_id
+                # data["cluster_title"] = assign_cluster_title(clusters[cluster_id], cluster_id)
+
+                with open("json_files/file" + str(doc_id) + ".json", 'w') as f:
+                    f.write(json.dumps(data))
+    return clusters, k_star, cost_list
 
 
 def select_first_mean_points(k, tf_vector):
@@ -37,6 +53,7 @@ def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
     while k <= k_upper_bound:
         clusters, j_cost = k_means(k, theta, tf_vector)
         j_cost += landa * k
+        print "trying k=" + str(k) + "..."
         print abs(cost_list[-1] - j_cost)
         print j_cost
         if abs(cost_list[-1] - j_cost) < alpha: # todo: change if needed!
@@ -45,8 +62,7 @@ def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
         cost_list.append(j_cost)
         prev_clusters = clusters
         k += 1
-    print "K: " + str(k)
-    print "no expected clustering in this range of k"
+    print "no expected clustering in this range of k, please increase upper bound."
     return clusters, k_upper_bound, cost_list
 
 

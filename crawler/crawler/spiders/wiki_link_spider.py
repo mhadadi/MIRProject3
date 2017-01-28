@@ -36,12 +36,17 @@ class WikiLinkSpider(scrapy.Spider):
         # print("aaaaa",soup.find(attrs={"id":"firstHeading"}).get_text())
         title = soup.find(attrs={"id": "firstHeading"}).get_text()
 
-        abstract = ''
         main_text = ''
+        out_links = []
+
         # print("title: ", title)
         for content_text in soup.find_all(attrs={'id': 'mw-content-text'}):
             paragraphs = content_text.find_all('p')
             links = content_text.find_all('a')
+            for link in links:
+                if link.parent.name=="p":
+                    out_link=link.get('href')
+                    out_links.append(response.urljoin(out_link))
             info = content_text.find(attrs={'class': 'infobox'})
             # print("info: ", info)
             abstract = ""
@@ -55,7 +60,6 @@ class WikiLinkSpider(scrapy.Spider):
 
             # finding links
             out_degree = 0
-            out_links = []
             for link in links:  # TODO: change to input parameter
                 # print("parent of link: ", [parent.name for parent in link.parents])
                 # print("count " ,  self.count)
@@ -88,6 +92,7 @@ class WikiLinkSpider(scrapy.Spider):
                 'curr_link': str(response.url),
                 'out_links': out_links,
                 'info_box': info_box,
+                'pagerank':0
             }
             self.scraped_count += 1
             self.save_data_as_json(data=data)

@@ -25,7 +25,7 @@ def make_index():
                 MAP_URL_TO_ID[jfile["curr_link"]] = doc_id
                 doc_id += 1
             except ElasticsearchException as es1:
-                print "error indexing " + str(doc_id)
+                print ("error indexing " , str(doc_id))
 
     return doc_id - 1
 
@@ -36,4 +36,9 @@ def delet_index():
 
 
 TOTAL_DOC_NUMBER = make_index()
-#   page rank
+
+# print("IT is a test",ES_CLIENT.get(index=INDEX_NAME, doc_type='article', id=2 , ignore=[400,404]))
+
+
+
+

@@ -3,25 +3,20 @@ import json
 import scrapy
 from bs4 import BeautifulSoup
 from scrapy.exceptions import CloseSpider
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
+from time import sleep
 
 
 class WikiLinkSpider(scrapy.Spider):
-
-    def __init__(self, start_urls, out_degree, number_of_docs):
-        self.start_urls = start_urls
-        self.out_degree = out_degree
-        self.number_of_docs = number_of_docs
-        self.name="wikilinks"
-
+    name = "wikilinks"
+    COUNT_MAX = 1000  # TODO : 1000 pishfarze
+    OUT_MAX = 10
+    START_URLS = [
+        'https://fa.wikipedia.org/wiki/%D8%B3%D8%B9%D8%AF%DB%8C'
+    ]
     scraped_count = 0
 
     def start_requests(self):
-        urls = [
-            'https://fa.wikipedia.org/wiki/%D8%B3%D8%B9%D8%AF%DB%8C'
-        ]
-        for url in urls:
+        for url in self.START_URLS:
             yield scrapy.Request(url=url, callback=self.parse)
 
     def save_data_as_json(self, data):
@@ -32,8 +27,8 @@ class WikiLinkSpider(scrapy.Spider):
     def parse(self, response):
         # print("stats:", self.crawler.stats.get_stats()['response_received_count'])
         # print("stats:", self.crawler.stats.get_stats())
-        if self.crawler.stats.get_stats()['response_received_count'] >= self.number_of_docs and \
-                        self.scraped_count >= self.number_of_docs:
+        if self.crawler.stats.get_stats()['response_received_count'] >= self.COUNT_MAX and \
+                        self.scraped_count >= self.COUNT_MAX:
             # self.crawler.stats.get_stats()['item_scraped_count'] >= self.COUNT_MAX:
             raise CloseSpider(reason="API usage exceeded")
 
@@ -60,23 +55,23 @@ class WikiLinkSpider(scrapy.Spider):
                 if parag.parent.get('id') == 'mw-content-text':
                     if not abstract:
                         abstract = parag.get_text()
-                        print("abstract: ", abstract)
+                        # print("abstract: ", abstract)
                     # print("parent of p: ", [parent.get('id') for parent in parag.parents])
                     main_text += (' ' + parag.get_text())
 
             # finding links
-            out_links = 0
+            out_degree = 0
             for link in links:  # TODO: change to input parameter
                 # print("parent of link: ", [parent.name for parent in link.parents])
                 # print("count " ,  self.count)
                 if link.parent.name == 'p':
                     next_page = link.get('href')
-                    out_links += 1
-                    if self.crawler.stats.get_stats()['response_received_count'] < self.number_of_docs:
+                    out_degree += 1
+                    if self.crawler.stats.get_stats()['response_received_count'] < self.COUNT_MAX:
                         out_links.append(response.urljoin(next_page))
                         yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
 
-                    if out_links >= self.out_degree:
+                    if out_degree >= self.OUT_MAX:
                         break
 
             info_box = {}
@@ -88,7 +83,7 @@ class WikiLinkSpider(scrapy.Spider):
                     th = table_row.find('th')
                     if th and td:
                         info_box[th.get_text()] = td.get_text()
-            print('info_box: ', self.scraped_count, " ", info_box)
+            # print('info_box: ', self.scraped_count, " ", info_box)
 
             # export or yield data
             data = {
@@ -102,12 +97,13 @@ class WikiLinkSpider(scrapy.Spider):
                 'culster_title':"",
                 'cluster_id':0
             }
+
             self.scraped_count += 1
+
+            #progress_bar
+            if self.scraped_count%(self.COUNT_MAX//20)==0:
+                progressbar='+'*(self.scraped_count//(self.COUNT_MAX//20))+'-'*(20-(self.scraped_count//(self.COUNT_MAX//20)))
+                print("crawling progress:",progressbar)
+
             self.save_data_as_json(data=data)
-print("crawling starts :")
-settings = get_project_settings()
-process = CrawlerProcess(settings)
-# process.crawl('wikipedia', start_urls=start_urls, out_degree=out_degree, total_pages=total_pages,
-#                   output_path='../data/')
-process.crawl(WikiLinkSpider)
-process.start()
+

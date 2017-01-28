@@ -7,7 +7,7 @@ p=[]
 #TODO : errors are not handling
 def build_pmatrix (alpha ):
     doc_id_list= get_doc_id_list()
-    print("docIDs_list",doc_id_list)
+    # print("docIDs_list",doc_id_list)
     V=float(1 / get_total_count_num())
     for doc_id_row in doc_id_list:
         p.append([])
@@ -48,30 +48,16 @@ def calculate_pagerank(alpha):
     file_list = os.listdir("json_files/")
     i=0
 
-    for tmp_file in file_list:
-        with open("json_files/" + tmp_file, 'r') as f:
+    #saving into elastic
+    for doc_id in get_doc_id_list():
+        with open("json_files/" + MAP_ID_TO_FILE_NAME[doc_id], 'r') as f:
             data = json.load(f)
-
-        data["pagerank"]=pagerank_vector[i]
-
-        with open("json_files/" + tmp_file, 'w') as f:
+        data["pagerank"]=pagerank_vector[doc_id-1]
+        with open("json_files/" + MAP_ID_TO_FILE_NAME[doc_id], 'w') as f:
             f.write(json.dumps(data))
-        i += 1
 
-    print("pagernk vector is:",pagerank_vector , numpy.array(pagerank_vector).sum())
+    # print("pagernk vector is:",pagerank_vector , numpy.array(pagerank_vector).sum())
     return pagerank_vector
-
-
-calculate_pagerank(0.25)
-
-
-
-
-
-
-
-
-
 
 
 

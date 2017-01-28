@@ -2,6 +2,7 @@ from clustering import k_means
 from constants import *
 from vector_creator import *
 from index import make_index
+from crawler.spiders import wiki_link_spider
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 import os
@@ -31,9 +32,10 @@ while(True):
         os.chdir('./crawler')
         settings = get_project_settings()
         process = CrawlerProcess(settings)
-            process.crawl('wikipedia', start_urls=start_urls, out_degree=out_degree, total_pages=total_pages,
-                          output_path='../data/')
-            process.start()
+        # process.crawl('wikipedia', start_urls=start_urls, out_degree=out_degree, total_pages=total_pages,
+        #                   output_path='../data/')
+        process.crawl(WikiLinkSpider)
+        process.start()
     elif mode == 2:
     elif mode == 3:
     elif mode == 4:

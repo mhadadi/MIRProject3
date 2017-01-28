@@ -3,10 +3,10 @@ import numpy
 from numpy import linalg
 p=[]
 def build_pmatrix (alpha ):
-    docIDs_list= MAP_ID_TO_URL.keys()
-    print("docIDs_list",docIDs_list)
+    doc_id_list= get_doc_id_list()
+    print("docIDs_list",doc_id_list)
     V=float(1/TOTAL_DOC_NUMBER)
-    for doc_id_row in docIDs_list:
+    for doc_id_row in doc_id_list:
         p.append([])
         out_links=ES_CLIENT.get(index=INDEX_NAME, doc_type='article', id=doc_id_row , ignore=[400,404])["_source"]["out_links"]
         if not out_links:
@@ -14,7 +14,7 @@ def build_pmatrix (alpha ):
             print("aaa",   p[doc_id_row - 1])
             break
         else:
-            for doc_id_col in docIDs_list:
+            for doc_id_col in doc_id_list:
                 if MAP_ID_TO_URL[doc_id_col] in out_links:
                     p[doc_id_row-1].append(1)
                 else:
@@ -26,7 +26,7 @@ def build_pmatrix (alpha ):
             else:
                 count_one = p[doc_id_row - 1].count(1)
                 print("count one",count_one)
-                for doc_id_col in docIDs_list:
+                for doc_id_col in doc_id_list:
                     p[doc_id_row-1][doc_id_col-1]/=count_one
                     p[doc_id_row-1][doc_id_col-1]=(1-alpha)*p[doc_id_row-1][doc_id_col-1]+alpha*V
                 print("ccc", p[doc_id_row - 1])
@@ -50,7 +50,7 @@ def build_pmatrix (alpha ):
     #             else:
     #                 p[doc_id_row-1].append(alpha*V)
 
-    for i in range(0,len(docIDs_list)):
+    for i in range(0,len(doc_id_list)):
         print("i row",i,"row",p_out[i],"sum",numpy.array(p_out[i]).sum())
     return p_out
 #calculate left eigon vector

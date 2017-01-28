@@ -1,8 +1,6 @@
-# todo:
 import json
 import random
 from math import sqrt
-from random import randrange
 
 from numpy.core.numeric import Inf
 
@@ -17,13 +15,13 @@ def clustering(k_upper_bound, theta, landa, alpha, tf_vector):
     clusters, k_star, cost_list = compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector)
     for cluster_id in clusters.keys():
         for doc_id in clusters[cluster_id]:
-                with open("json_files/file" + str(doc_id) + ".json", 'r') as f:
+                with open("json_files/" + MAP_ID_TO_FILE_NAME[doc_id], 'r') as f:
                     data = json.load(f)
-
+                print MAP_ID_TO_FILE_NAME[doc_id], doc_id, cluster_id
                 data["cluster_id"] = cluster_id
                 # data["cluster_title"] = assign_cluster_title(clusters[cluster_id], cluster_id)
 
-                with open("json_files/file" + str(doc_id) + ".json", 'w') as f:
+                with open("json_files/" + MAP_ID_TO_FILE_NAME[doc_id], 'w') as f:
                     f.write(json.dumps(data))
     return clusters, k_star, cost_list
 
@@ -53,7 +51,7 @@ def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
     while k <= k_upper_bound:
         clusters, j_cost = k_means(k, theta, tf_vector)
         j_cost += landa * k
-        print "trying k=" + str(k) + "..."
+        print ("trying k=", str(k), "...")
         print abs(cost_list[-1] - j_cost)
         print j_cost
         if abs(cost_list[-1] - j_cost) < alpha: # todo: change if needed!
@@ -62,7 +60,7 @@ def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
         cost_list.append(j_cost)
         prev_clusters = clusters
         k += 1
-    print "no expected clustering in this range of k, please increase upper bound."
+    print ("no expected clustering in this range of k, please increase upper bound.")
     return clusters, k_upper_bound, cost_list
 
 
@@ -97,7 +95,7 @@ def compute_distance(vector, miu):
 # todo: test!
 def compute_mean(cluster_doc_ids_list, tf_vector):
     miu = dict()
-    c_len = len(cluster_doc_ids_list)
+    c_len = float(len(cluster_doc_ids_list))
     # compute sum of tf's for doc in this cluster
     for doc_id in cluster_doc_ids_list:
         terms_tf = tf_vector[doc_id]
@@ -170,3 +168,5 @@ def k_means(k, theta, tf_vector):
 # test compute_distance
 # print compute_distance({'x': 10, 'y': 5}, {'x': 7, 'y': 9, 'z':sqrt(24)})
 # print compute_distance({'x': 10, 'y': 5}, {})
+
+

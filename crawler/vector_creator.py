@@ -7,7 +7,6 @@
 #   "term_statistics" : true,
 #   "field_statistics" : false
 # }
-from index import TOTAL_DOC_NUMBER
 from constants import *
 
 
@@ -29,7 +28,7 @@ def get_doc_term_frequency(doc_id, doc_type):
         # print(tmp_dic)
         return {doc_id: tmp_dic}
     else:
-        print ("no term vectors " , str(doc_id))
+        print ("no term vectors ", str(doc_id))
         return {doc_id: {}}
     # .get(index=INDEX,id=doc_id,doc_type=doc_type,params=)
 
@@ -42,7 +41,7 @@ def add_to_vocab(tokens):
 
 def create_tf_vectors():
     tf_vector = dict()
-    for doc_id in range(1, TOTAL_DOC_NUMBER+1):
+    for doc_id in get_doc_id_list():
         tf_vector.update(get_doc_term_frequency(doc_id,DEFAULT_TYPE))
     return tf_vector
 

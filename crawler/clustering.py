@@ -1,31 +1,53 @@
 # todo:
-import math
+import random
 from math import sqrt
+from random import randrange
 
 from numpy.core.numeric import Inf
-from pyasn1.type import char
 
 from constants import *
 
 
-def select_first_mean_points(k,tf_vector):
+def clustering(k_upper_bound, theta, landa, alpha, tf_vector):
+    return compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector)
+
+
+def select_first_mean_points(k, tf_vector):
     # todo: add heuristic or randomness!
     first_points = []
+    try:
+        rand_doc_id = random.sample(range(1, len(get_doc_id_list()) + 1), k)
+    except ValueError:
+        print 'Sample size exceeded population size.'
     for i in range(k):
-        first_points.append(tf_vector[i+1])
+
+        print "first rand doc id: " + str(rand_doc_id[i])
+        first_points.append(tf_vector[rand_doc_id[i]])
     return first_points
 
 
-# todo:
-def compute_best_k(k_upper_bound):
-    return k_upper_bound
-
-
-def compute_j(clusters_cost):
-    j = 0
-    for key in clusters_cost.keys():
-        j += clusters_cost[key]
-    return j
+# todo: handle empty clusters!
+def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
+    cost_list = [Inf]
+    prev_clusters = dict
+    clusters = dict
+    if k_upper_bound == -1:
+        k_upper_bound = Inf
+    k = 1
+    while k <= k_upper_bound:
+        clusters, j_cost = k_means(k, theta, tf_vector)
+        j_cost += landa * k
+        print abs(cost_list[-1] - j_cost)
+        print j_cost
+        if abs(cost_list[-1] - j_cost) < alpha: # todo: change if needed!
+            cost_list.append(j_cost)
+            return prev_clusters, k-1, cost_list
+        cost_list.append(j_cost)
+        prev_clusters = clusters
+        k += 1
+    print "K: " + str(k)
+    print "no expected clustering in this range of k"
+    return clusters, k_upper_bound, cost_list
 
 
 def value(dic, key):
@@ -46,6 +68,9 @@ def value(dic, key):
 
 # Euclidean distance
 def compute_distance(vector, miu):
+    if not miu:
+        print "no miuuu"
+        return Inf
     key_union = list(set(vector.keys()) | set(miu.keys()))
     dist = 0
     for key in key_union:
@@ -63,7 +88,11 @@ def compute_mean(cluster_doc_ids_list, tf_vector):
         for term in terms_tf.keys():
             if term not in miu:
                 miu.update({term: 0})
-            miu[term] += (terms_tf[term]/c_len)
+            miu[term] += (terms_tf[term])
+
+    miu = {miu_item: miu[miu_item]/c_len for miu_item in miu.keys()}
+    # for miu_item in miu.keys():
+    #     miu[miu_item] /= c_len
     return miu
 
 
@@ -71,27 +100,29 @@ def compute_mean(cluster_doc_ids_list, tf_vector):
 def k_means(k, theta, tf_vector):
     mean_points = select_first_mean_points(k, tf_vector)
     # print ("first_points: ", mean_points[3])
-    cost = Inf
+    prev_cost = 0
+    next_cost = Inf
     doc_id_list = get_doc_id_list()
     print doc_id_list
     print tf_vector.keys()
     iterate = 0
-    while cost > theta:
+    clusters = dict()
+    while abs(prev_cost-next_cost) > theta:
         clusters = dict()
-        clusters_cost = dict()
-        j=0
+        j = 0
         #  one iteration of k_means
         for doc_id in doc_id_list:
             min_dist = Inf
             ci = -1
-            for i in range(k):
-                # print("in for")
-                # print ("tf_vector", tf_vector[doc_id])
+            for cluster_id in range(k):
                 # compute distance between a doc vector and a M vector(mean of cluster i)
-                dist = compute_distance(tf_vector[doc_id], mean_points[i])
+                dist = compute_distance(tf_vector[doc_id], mean_points[cluster_id])
                 if dist < min_dist:
                     min_dist = dist
-                    ci = i
+                    ci = cluster_id
+                    # print "in iteration " + str(iterate) + " for doc " + str(doc_id) + "cluster changed to " + str(
+                    #     ci) + " with min_dist: " + str(min_dist)
+
             # print "ci: "+str(ci) + "doc_id: " + str(doc_id)
             # assigning cluster to doc
             if ci in clusters.keys():
@@ -101,27 +132,25 @@ def k_means(k, theta, tf_vector):
                 clusters.update({ci: [doc_id]})
 
             j += min_dist
-
-        cost = j
-        #niazi nabud bedunim male kudum khushan cost ha!!
-        #     # updatind cluster cost
-        #     if ci in clusters_cost.keys():
-        #         clusters_cost[ci] += min_dist
-        #     else:
-        #         clusters_cost.update({ci: min_dist})
-        #
-        # # compute cost of clustering
-        # cost = compute_j(clusters_cost)
+            # print "for doc id " + str(doc_id) + " added to j: " + str(min_dist)
+        prev_cost = next_cost
+        next_cost = j
 
         # compute new cluster means
         ####### print clusters
-        for i in range(k):
-            miu_i = compute_mean(clusters[i], tf_vector)
-            # if i==3:
-            #     print "centroid of third cluster " + str(miu_i)
-            #     print tf_vector[3]
-            # update means...
-            mean_points[i] = miu_i
+        for cluster_id in range(k):
+            if cluster_id in clusters.keys():
+                miu_i = compute_mean(clusters[cluster_id], tf_vector)
+                # update means...
+                mean_points[cluster_id] = miu_i
+            # empty cluster!
+            else:
+                mean_points[cluster_id] = None
         iterate += 1
-        print("cost in iteration " + str(iterate) + ": " + str(cost))
+        # print clusters
+        print("cost in iteration " + str(iterate) + ": " + str(next_cost))
+    return clusters, next_cost
 
+# test compute_distance
+# print compute_distance({'x': 10, 'y': 5}, {'x': 7, 'y': 9, 'z':sqrt(24)})
+# print compute_distance({'x': 10, 'y': 5}, {})

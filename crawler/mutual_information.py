@@ -7,7 +7,7 @@ from constants import get_total_count_num, VOCAB, get_doc_id_list
 def compute_mutual_information(clusters,tf_vector):
     count_total_doc = float(get_total_count_num())
     I = dict(dict())
-
+    five_most_common = dict()
     for cluster_id in clusters:
         if len(clusters[cluster_id]) == 0:
             continue
@@ -30,7 +30,6 @@ def compute_mutual_information(clusters,tf_vector):
 
                     # p_t_0_c_1 is ready for vocab
                     p_t_0_c_1 = (count_cluster_doc - p_t_1_c_1) / count_total_doc
-
                     # p_T_1_C_1 is ready for vocab!
                     p_t_1_c_1 /= count_total_doc
 
@@ -64,4 +63,7 @@ def compute_mutual_information(clusters,tf_vector):
 
 
             # print ("I(c,t): ", I[cluster_id][vocab])
-        print ("5 most common for cluster ",cluster_id,": ", dict(Counter(I[cluster_id]).most_common(5)))
+
+        five_most_common.update({cluster_id: dict(Counter(I[cluster_id]).most_common(5))})
+        print ("5 most common for cluster ",cluster_id,": ", five_most_common[cluster_id])
+    return five_most_common

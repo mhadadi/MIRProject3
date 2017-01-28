@@ -19,7 +19,7 @@ def get_doc_term_frequency(doc_id, doc_type):
                               positions=False,
                               field_statistics=False,
                               term_statistics=True, ignore=[400, 404])
-    if "term_vectors" in a.keys():
+    if "term_vectors" in a.keys() and MAIN_TEXT in a["term_vectors"].keys():
         term_vec = a["term_vectors"][MAIN_TEXT]["terms"]
         tmp_dic = {}
         tokens = term_vec.keys()

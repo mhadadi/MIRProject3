@@ -78,4 +78,4 @@ def calculate_pagerank(alpha):
 # x=v.max()
 # print(v.tolist().index(x))
 # # print(MAP_ID_TO_URL[v.tolist().index(x)])
-
+# print(find_eigenvector(x))

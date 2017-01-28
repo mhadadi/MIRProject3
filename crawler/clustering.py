@@ -28,12 +28,12 @@ def select_first_mean_points(k, tf_vector):
     first_points = []
     try:
         rand_doc_id = random.sample(range(1, len(get_doc_id_list()) + 1), k)
+        for i in range(k):
+            # print ("first rand doc id: " + str(rand_doc_id[i]))
+            first_points.append(tf_vector[rand_doc_id[i]])
     except ValueError:
         print ('Sample size exceeded population size.')
-    for i in range(k):
 
-        print ("first rand doc id: " + str(rand_doc_id[i]))
-        first_points.append(tf_vector[rand_doc_id[i]])
     return first_points
 
 
@@ -49,8 +49,8 @@ def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
         clusters, j_cost = k_means(k, theta, tf_vector)
         j_cost += landa * k
         print ("trying k=", str(k), "...")
-        print (abs(cost_list[-1] - j_cost))
-        print (j_cost)
+        # print (abs(cost_list[-1] - j_cost))
+        # print (j_cost)
         if abs(cost_list[-1] - j_cost) < alpha: # todo: change if needed!
             cost_list.append(j_cost)
             return prev_clusters, k-1, cost_list
@@ -113,8 +113,8 @@ def k_means(k, theta, tf_vector):
     prev_cost = 0
     next_cost = Inf
     doc_id_list = get_doc_id_list()
-    print (doc_id_list)
-    print (tf_vector.keys())
+    # print (doc_id_list)
+    # print (tf_vector.keys())
     iterate = 0
     clusters = dict()
     while abs(prev_cost-next_cost) > theta:
@@ -158,7 +158,7 @@ def k_means(k, theta, tf_vector):
                 mean_points[cluster_id] = None
         iterate += 1
         # print clusters
-        print("cost in iteration " + str(iterate) + ": " + str(next_cost))
+        # print("cost in iteration " + str(iterate) + ": " + str(next_cost))
     return clusters, next_cost
 
 # test compute_distance

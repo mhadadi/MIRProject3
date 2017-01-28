@@ -94,7 +94,7 @@ class WikiLinkSpider(scrapy.Spider):
                 'out_links': out_links,
                 'info_box': info_box,
                 'pagerank':0,
-                'culster_title':"",
+                'cluster_title':"",
                 'cluster_id':0
             }
 

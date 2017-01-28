@@ -3,12 +3,18 @@ import json
 import scrapy
 from bs4 import BeautifulSoup
 from scrapy.exceptions import CloseSpider
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
 
 
 class WikiLinkSpider(scrapy.Spider):
-    name = "wikilinks"
-    COUNT_MAX = 50  # TODO : 1000 pishfarze
-    OUT_MAX = 10
+
+    def __init__(self, start_urls, out_degree, number_of_docs):
+        self.start_urls = start_urls
+        self.out_degree = out_degree
+        self.number_of_docs = number_of_docs
+        self.name="wikilinks"
+
     scraped_count = 0
 
     def start_requests(self):
@@ -26,8 +32,8 @@ class WikiLinkSpider(scrapy.Spider):
     def parse(self, response):
         # print("stats:", self.crawler.stats.get_stats()['response_received_count'])
         # print("stats:", self.crawler.stats.get_stats())
-        if self.crawler.stats.get_stats()['response_received_count'] >= self.COUNT_MAX and \
-                        self.scraped_count >= self.COUNT_MAX:
+        if self.crawler.stats.get_stats()['response_received_count'] >= self.number_of_docs and \
+                        self.scraped_count >= self.number_of_docs:
             # self.crawler.stats.get_stats()['item_scraped_count'] >= self.COUNT_MAX:
             raise CloseSpider(reason="API usage exceeded")
 
@@ -59,18 +65,18 @@ class WikiLinkSpider(scrapy.Spider):
                     main_text += (' ' + parag.get_text())
 
             # finding links
-            out_degree = 0
+            out_links = 0
             for link in links:  # TODO: change to input parameter
                 # print("parent of link: ", [parent.name for parent in link.parents])
                 # print("count " ,  self.count)
                 if link.parent.name == 'p':
                     next_page = link.get('href')
-                    out_degree += 1
-                    if self.crawler.stats.get_stats()['response_received_count'] < self.COUNT_MAX:
+                    out_links += 1
+                    if self.crawler.stats.get_stats()['response_received_count'] < self.number_of_docs:
                         out_links.append(response.urljoin(next_page))
                         yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
 
-                    if out_degree >= self.OUT_MAX:
+                    if out_links >= self.out_degree:
                         break
 
             info_box = {}
@@ -98,3 +104,10 @@ class WikiLinkSpider(scrapy.Spider):
             }
             self.scraped_count += 1
             self.save_data_as_json(data=data)
+print("crawling starts :")
+settings = get_project_settings()
+process = CrawlerProcess(settings)
+# process.crawl('wikipedia', start_urls=start_urls, out_degree=out_degree, total_pages=total_pages,
+#                   output_path='../data/')
+process.crawl(WikiLinkSpider)
+process.start()

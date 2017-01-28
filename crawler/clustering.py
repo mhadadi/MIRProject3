@@ -92,7 +92,7 @@ def k_means(k, theta, tf_vector):
                 if dist < min_dist:
                     min_dist = dist
                     ci = i
-            print "ci: "+str(ci) + "doc_id: " + str(doc_id)
+            # print "ci: "+str(ci) + "doc_id: " + str(doc_id)
             # assigning cluster to doc
             if ci in clusters.keys():
                 if not doc_id in clusters[ci]:
@@ -117,11 +117,11 @@ def k_means(k, theta, tf_vector):
         ####### print clusters
         for i in range(k):
             miu_i = compute_mean(clusters[i], tf_vector)
-            if i==3:
-                print "centroid of third cluster " + str(miu_i)
-                print tf_vector[3]
+            # if i==3:
+            #     print "centroid of third cluster " + str(miu_i)
+            #     print tf_vector[3]
             # update means...
             mean_points[i] = miu_i
         iterate += 1
-        print("cost in iteration " + str(iterate+1) + ": " + str(cost))
+        print("cost in iteration " + str(iterate) + ": " + str(cost))
 

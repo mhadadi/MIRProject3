@@ -8,6 +8,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from vector_creator import create_tf_vectors
 from pagerank import calculate_pagerank
+from retrieve import normal_retrieve
 
 while (True):
     print("please enter your choice:")
@@ -69,4 +70,11 @@ while (True):
         for doc_id in get_doc_id_list():
             print(MAP_ID_TO_FILE_NAME[doc_id], "pagerank is", pagerank_vector[doc_id - 1],
                   " its address is: http://localhost:9200/wiki_index/" + DEFAULT_TYPE + "/" + str(doc_id))
-            # elif mode == 5:
+    elif mode == 5:
+        print ("enter title")
+        a=input()
+        print ("enter abstract")
+        b=input()
+        print ("enter maintext")
+        c=input()
+        normal_retrieve(10,10,10,a,b,c)

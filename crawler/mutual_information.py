@@ -1,3 +1,4 @@
+from collections import Counter
 from math import log
 
 from constants import get_total_count_num, VOCAB, get_doc_id_list
@@ -5,7 +6,6 @@ from constants import get_total_count_num, VOCAB, get_doc_id_list
 
 def compute_mutual_information(clusters,tf_vector):
     count_total_doc = float(get_total_count_num())
-    print ("count total doc: ",count_total_doc)
     I = dict(dict())
 
     for cluster_id in clusters:
@@ -22,7 +22,7 @@ def compute_mutual_information(clusters,tf_vector):
             count_doc_has_vocab = 0
             for doc_id in get_doc_id_list():
                 if vocab in tf_vector[doc_id]:
-                    print (vocab, "vocab is in doc id:", doc_id)
+                    # print (vocab, "vocab is in doc id:", doc_id)
                     count_doc_has_vocab += 1      #computing T_1
                 if doc_id in in_cluster_doc_id_list:
                     if vocab in tf_vector[doc_id].keys():  # doc kalame t ra darad va dar khushe c hast
@@ -45,17 +45,13 @@ def compute_mutual_information(clusters,tf_vector):
                     p_t_1_c_0 /= count_total_doc
 
             p_t_1 = count_doc_has_vocab/count_total_doc
-            print (count_total_doc, count_doc_has_vocab,float(count_doc_has_vocab)/count_total_doc)
-            print (count_total_doc, count_doc_has_vocab,count_doc_has_vocab//count_total_doc)
 
-            print ("for vocab, ", vocab, "count_doc_has_vocab", count_doc_has_vocab)
-            print ("vocab: ", vocab, "cluster_id", cluster_id)
-            print ("t_1: ", p_t_1)
-            print ("c_1: ", p_c_1)
-            print ("p_t_0_c_0: ", p_t_0_c_0)
-            print ("p_t_1_c_0: ", p_t_1_c_0)
-            print ("p_t_0_c_1: ", p_t_0_c_1)
-            print ("p_t_1_c_1: ", p_t_1_c_1)
+            # print ("t_1: ", p_t_1)
+            # print ("c_1: ", p_c_1)
+            # print ("p_t_0_c_0: ", p_t_0_c_0)
+            # print ("p_t_1_c_0: ", p_t_1_c_0)
+            # print ("p_t_0_c_1: ", p_t_0_c_1)
+            # print ("p_t_1_c_1: ", p_t_1_c_1)
 
             if cluster_id not in I:
                 I.update({cluster_id: {vocab: 0}})  # TODO
@@ -67,4 +63,5 @@ def compute_mutual_information(clusters,tf_vector):
                                      (p_t_0_c_0 + log(p_t_0_c_0/((1-p_t_1)*(1-p_c_1)), 2) if p_t_0_c_0 else 0))
 
 
-            print ("I(c,t): ", I[cluster_id][vocab])
+            # print ("I(c,t): ", I[cluster_id][vocab])
+        print ("5 most common for cluster ",cluster_id,": ", dict(Counter(I[cluster_id]).most_common(5)))

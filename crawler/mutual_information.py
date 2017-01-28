@@ -4,6 +4,11 @@ from math import log
 from constants import get_total_count_num, VOCAB, get_doc_id_list
 
 
+# root method
+def get_five_most_commons(clusters, tf_vector):
+    return compute_mutual_information(clusters, tf_vector)
+
+
 def compute_mutual_information(clusters,tf_vector):
     count_total_doc = float(get_total_count_num())
     I = dict(dict())
@@ -65,5 +70,8 @@ def compute_mutual_information(clusters,tf_vector):
             # print ("I(c,t): ", I[cluster_id][vocab])
 
         five_most_common.update({cluster_id: dict(Counter(I[cluster_id]).most_common(5))})
-        print ("5 most common for cluster ",cluster_id,": ", five_most_common[cluster_id])
+        # print ("5 most common for cluster ",cluster_id,": ", five_most_common[cluster_id]
+        # print(convert_dic_to_string(five_most_common[cluster_id]))
     return five_most_common
+
+

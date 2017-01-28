@@ -13,11 +13,11 @@ OUT_LINKS = "out_links"
 DEFAULT_TYPE = "article"
 
 #clustering consts
-TETA = 0.1
-LANDA = 0.1
-ALPHA = 0.1
+TETA = 1
+LANDA = 100
+ALPHA = 100
 
-1
+
 VOCAB = []
 MAP_ID_TO_URL = {}
 MAP_URL_TO_ID = {}

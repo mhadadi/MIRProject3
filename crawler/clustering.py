@@ -4,26 +4,23 @@ from math import sqrt
 
 from numpy.core.numeric import Inf
 
+from mutual_information import get_five_most_commons
 from constants import *
-
-
-def assign_cluster_title(doc_id_list_in_cluster, cluster_id):
-    pass
 
 
 def clustering(k_upper_bound, theta, landa, alpha, tf_vector):
     clusters, k_star, cost_list = compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector)
+    print("calculating title of clusters...")
+    cluster_labels = get_five_most_commons(clusters, tf_vector)
     for cluster_id in clusters.keys():
+        cluster_labels[cluster_id] = convert_dic_to_string(cluster_labels[cluster_id])
+        print("updating cluster id and title of docs...")
         for doc_id in clusters[cluster_id]:
-                with open("json_files/" + MAP_ID_TO_FILE_NAME[doc_id], 'r') as f:
-                    data = json.load(f)
-                print MAP_ID_TO_FILE_NAME[doc_id], doc_id, cluster_id
-                data["cluster_id"] = cluster_id
-                # data["cluster_title"] = assign_cluster_title(clusters[cluster_id], cluster_id)
-
-                with open("json_files/" + MAP_ID_TO_FILE_NAME[doc_id], 'w') as f:
-                    f.write(json.dumps(data))
-    return clusters, k_star, cost_list
+            ES_CLIENT.update(index=INDEX_NAME,doc_type=DEFAULT_TYPE,id=doc_id,
+                body={"doc":{"cluster_id": cluster_id}})
+            ES_CLIENT.update(index=INDEX_NAME, doc_type=DEFAULT_TYPE, id=doc_id,
+                             body={"doc": {"cluster_title": cluster_labels[cluster_id]}})
+    return clusters, cluster_labels, k_star, cost_list
 
 
 def select_first_mean_points(k, tf_vector):
@@ -32,10 +29,10 @@ def select_first_mean_points(k, tf_vector):
     try:
         rand_doc_id = random.sample(range(1, len(get_doc_id_list()) + 1), k)
     except ValueError:
-        print 'Sample size exceeded population size.'
+        print ('Sample size exceeded population size.')
     for i in range(k):
 
-        print "first rand doc id: " + str(rand_doc_id[i])
+        print ("first rand doc id: " + str(rand_doc_id[i]))
         first_points.append(tf_vector[rand_doc_id[i]])
     return first_points
 
@@ -52,8 +49,8 @@ def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
         clusters, j_cost = k_means(k, theta, tf_vector)
         j_cost += landa * k
         print ("trying k=", str(k), "...")
-        print abs(cost_list[-1] - j_cost)
-        print j_cost
+        print (abs(cost_list[-1] - j_cost))
+        print (j_cost)
         if abs(cost_list[-1] - j_cost) < alpha: # todo: change if needed!
             cost_list.append(j_cost)
             return prev_clusters, k-1, cost_list
@@ -83,7 +80,6 @@ def value(dic, key):
 # Euclidean distance
 def compute_distance(vector, miu):
     if not miu:
-        print "no miuuu"
         return Inf
     key_union = list(set(vector.keys()) | set(miu.keys()))
     dist = 0
@@ -117,8 +113,8 @@ def k_means(k, theta, tf_vector):
     prev_cost = 0
     next_cost = Inf
     doc_id_list = get_doc_id_list()
-    print doc_id_list
-    print tf_vector.keys()
+    print (doc_id_list)
+    print (tf_vector.keys())
     iterate = 0
     clusters = dict()
     while abs(prev_cost-next_cost) > theta:
@@ -170,3 +166,8 @@ def k_means(k, theta, tf_vector):
 # print compute_distance({'x': 10, 'y': 5}, {})
 
 
+def convert_dic_to_string(dic):
+    str = ""
+    for term in dic.keys():
+        str += (term + " ")
+    return str

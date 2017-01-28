@@ -92,7 +92,9 @@ class WikiLinkSpider(scrapy.Spider):
                 'curr_link': str(response.url),
                 'out_links': out_links,
                 'info_box': info_box,
-                'pagerank':0
+                'pagerank':0,
+                'culster_title':"",
+                'cluster_id':0
             }
             self.scraped_count += 1
             self.save_data_as_json(data=data)

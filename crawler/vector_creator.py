@@ -7,6 +7,7 @@
 #   "term_statistics" : true,
 #   "field_statistics" : false
 # }
+from index import get_total_count_num
 from constants import *
 
 

@@ -8,7 +8,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from vector_creator import create_tf_vectors
 from pagerank import calculate_pagerank
-from retrieve import normal_retrieve, get_url_by_id
+from retrieve import *
 
 while (True):
     print("please enter your choice or -1 for exit:")
@@ -71,10 +71,6 @@ while (True):
             print(MAP_ID_TO_FILE_NAME[doc_id], "pagerank is", pagerank_vector[doc_id - 1],
                   " its address is: http://localhost:9200/wiki_index/" + DEFAULT_TYPE + "/" + str(doc_id))
     elif mode == 5:
-        print("choose mode")
-        print("1 -> normal search")
-        print("2 -> in cluster search ")
-        mode2=int(input())
         print("enter title query and weight")
         title_query=input()
         title_weight=int (input())
@@ -84,10 +80,25 @@ while (True):
         print("enter maintext query and waight")
         main_text_query=input()
         main_text_weight=int (input())
-        result_list=normal_retrieve(title_query=title_query,title_weight=title_weight,
-                        abstract_weight=abstract_weight,abstract_query=abstract_query,
-                        main_text_weight=main_text_weight, main_text_query=main_text_query)
-        # print(result_list["hits"]['hits'][0])
+
+        print("choose mode")
+        print("1 -> normal search")
+        print("2 -> in cluster search ")
+        mode2 = int(input())
+
+        result_list = dict()
+        if mode2 == 1:
+            result_list=normal_retrieve(title_query=title_query,title_weight=title_weight,
+                            abstract_weight=abstract_weight,abstract_query=abstract_query,
+                            main_text_weight=main_text_weight, main_text_query=main_text_query)
+            # print(result_list["hits"]['hits'][0])
+        elif mode == 2:
+            print("cluster id: ")
+            cluster_id = input()
+            result_list=get_in_fix_cluster(title_query=title_query,title_weight=title_weight,
+                            abstract_weight=abstract_weight,abstract_query=abstract_query,
+                            main_text_weight=main_text_weight, main_text_query=main_text_query, cluster_id=cluster_id)
+
         retrieved_doc_list = result_list["hits"]["hits"]
         retrieved_doc_ids = []
         print("dd", retrieved_doc_list[0]["_id"])

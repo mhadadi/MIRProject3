@@ -17,3 +17,6 @@ MAP_URL_TO_ID = {}
 
 def get_doc_id_list():
     return MAP_ID_TO_URL.keys()
+
+def get_total_count_num():
+    return len(get_doc_id_list())

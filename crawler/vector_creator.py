@@ -7,7 +7,7 @@
 #   "term_statistics" : true,
 #   "field_statistics" : false
 # }
-from index import TOTAL_DOC_NUMBER
+from index import get_total_count_num
 from constants import *
 
 
@@ -42,7 +42,7 @@ def add_to_vocab(tokens):
 
 def create_tf_vectors():
     tf_vector = dict()
-    for doc_id in range(1, TOTAL_DOC_NUMBER+1):
+    for doc_id in range(1, get_total_count_num+1):
         tf_vector.update(get_doc_term_frequency(doc_id,DEFAULT_TYPE))
     return tf_vector
 

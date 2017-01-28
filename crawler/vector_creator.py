@@ -29,7 +29,7 @@ def get_doc_term_frequency(doc_id, doc_type):
         # print(tmp_dic)
         return {doc_id: tmp_dic}
     else:
-        print "no term vectors " + str(doc_id)
+        print ("no term vectors " , str(doc_id))
         return {doc_id: {}}
     # .get(index=INDEX,id=doc_id,doc_type=doc_type,params=)
 

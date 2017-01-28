@@ -25,7 +25,7 @@ def make_index():
                 MAP_URL_TO_ID[jfile["curr_link"]] = doc_id
                 doc_id += 1
             except ElasticsearchException as es1:
-                print "error indexing " + str(doc_id)
+                print ("error indexing " , str(doc_id))
 
     return doc_id - 1
 

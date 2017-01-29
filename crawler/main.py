@@ -117,8 +117,11 @@ while (True):
         print("sorted retrieved doc ids are: ", retrieved_doc_ids)
         print("enter one two show URL: ")
         id = input()
-        if id in retrieved_doc_ids:
-            get_url_by_id(id)
+        while id not in retrieved_doc_ids:
+            print("enter valid doc_id from list")
+            id = input()
+        print(get_url_by_id(id))
+
         # print(result_list["hits"])
         # print(result_list["hits"]["hits"])
         # print(result_list["hits"]["total"])

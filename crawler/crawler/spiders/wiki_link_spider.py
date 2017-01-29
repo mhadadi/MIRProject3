@@ -10,9 +10,8 @@ class WikiLinkSpider(scrapy.Spider):
     name = "wikilinks"
     COUNT_MAX = 1000  # TODO : 1000 pishfarze
     OUT_MAX = 10
-    START_URLS = [
-        'https://fa.wikipedia.org/wiki/%D8%B3%D8%B9%D8%AF%DB%8C'
-    ]
+    START_URLS=['https://fa.wikipedia.org/wiki/%D8%B3%D8%B9%D8%AF%DB%8C']
+
     scraped_count = 0
 
     def start_requests(self):

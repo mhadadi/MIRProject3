@@ -21,18 +21,24 @@ while (True):
 
     # crawl
     if mode == 1:
-        print("enter URLs:")
-        start_urls = input()
+        print("enter URLs and # for end:")
+        start_urls=[]
+        in_url=""
+        while(in_url !="#"):
+            in_url=input()
+            start_urls.append(in_url)
         print ("enter out degree:")
         out_degree = int(input())
         print("enter number of docs:")
         number_of_docs = int(input())
+
         # call crawler
         print("crawling starts :")
         settings = get_project_settings()
         settings.overrides['LOG_ENABLED'] = False
         process = CrawlerProcess(settings)
-        # WikiLinkSpider.START_URLS=start_urls
+        # WikiLinkSpider.START_URLS.append(start_urls)
+        WikiLinkSpider.START_URLS=start_urls
         WikiLinkSpider.COUNT_MAX = number_of_docs
         WikiLinkSpider.OUT_MAX = out_degree
         process.crawl(WikiLinkSpider)
@@ -45,6 +51,7 @@ while (True):
         mode1 = int(input())
         if mode1 == 1:
             make_index()
+            print("indexing finished")
         if mode1 == 2:
             delet_index()
             print("index is deleted")
@@ -69,7 +76,7 @@ while (True):
         pagerank_vector = calculate_pagerank(alpha)
         for doc_id in get_doc_id_list():
             print(MAP_ID_TO_FILE_NAME[doc_id], "pagerank is", pagerank_vector[doc_id - 1],
-                  " its address is: http://localhost:9200/wiki_index/" + DEFAULT_TYPE + "/" + str(doc_id))
+                  " its address is: http://localhost:9200/wiki_index/" + DEFAULT_TYPE + "/" + str(doc_id)+"?pretty=true")
     elif mode == 5:
         print("enter title query and weight")
         title_query=input()

@@ -20,7 +20,7 @@ def make_index():
                 ES_CLIENT.index(index=INDEX_NAME, doc_type='article', id=doc_id, body=jfile)
                 # print("index is build " + str(doc_id))
                 # print(ES_CLIENT.get(index=INDEX_NAME, doc_type='article', id=doc_id , ignore=[400,404]))
-                print( tmp_file , "RESTful web service address is:","http://localhost:9200/wiki_index/"+DEFAULT_TYPE+"/"+str(doc_id))
+                print( tmp_file , "RESTful web service address is:","http://localhost:9200/wiki_index/"+DEFAULT_TYPE+"/"+str(doc_id)+"?pretty=true")
                 MAP_ID_TO_URL[doc_id] = jfile["curr_link"]
                 MAP_URL_TO_ID[jfile["curr_link"]] = doc_id
                 MAP_ID_TO_FILE_NAME.update({doc_id: tmp_file})

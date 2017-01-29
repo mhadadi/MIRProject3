@@ -87,41 +87,54 @@ while (True):
         print("enter maintext query and waight")
         main_text_query=input()
         main_text_weight=int (input())
-
+        print("search based on pagerank?")
+        print("1 -> no")
+        print("2 -> yes")
+        pagerank_mode=int(input())
         print("choose mode")
         print("1 -> normal search")
         print("2 -> in cluster search ")
         mode2 = int(input())
-
         result_list = dict()
-        if mode2 == 1:
-            result_list=normal_retrieve(title_query=title_query,title_weight=title_weight,
-                            abstract_weight=abstract_weight,abstract_query=abstract_query,
-                            main_text_weight=main_text_weight, main_text_query=main_text_query)
-            # print(result_list["hits"]['hits'][0])
-        elif mode == 2:
-            print("cluster id: ")
-            cluster_id = input()
-            result_list=get_in_fix_cluster(title_query=title_query,title_weight=title_weight,
-                            abstract_weight=abstract_weight,abstract_query=abstract_query,
-                            main_text_weight=main_text_weight, main_text_query=main_text_query, cluster_id=cluster_id)
+
+        if (pagerank_mode==1):
+            if mode2 == 1:
+                result_list=normal_retrieve(title_query=title_query,title_weight=title_weight,
+                                abstract_weight=abstract_weight,abstract_query=abstract_query,
+                                main_text_weight=main_text_weight, main_text_query=main_text_query)
+                # print(result_list["hits"]['hits'][0])
+            elif mode2 == 2:
+                print("cluster id: ")
+                cluster_id = input()
+                result_list = cluster_retrieve(title_query=title_query, title_weight=title_weight,
+                                              abstract_weight=abstract_weight, abstract_query=abstract_query,
+                                              main_text_weight=main_text_weight, main_text_query=main_text_query,cluster_id=cluster_id)
+        elif (pagerank_mode == 2):
+            if mode2 == 1:
+                result_list = normal_retrieve_pagerank(title_query=title_query, title_weight=title_weight,
+                                                       abstract_weight=abstract_weight,
+                                                       abstract_query=abstract_query,
+                                                       main_text_weight=main_text_weight,
+                                                       main_text_query=main_text_query)
+            elif mode2 == 2:
+                print("cluster id: ")
+                cluster_id = input()
+                result_list = cluster_retrieve_pagerank(title_query=title_query, title_weight=title_weight,
+                                              abstract_weight=abstract_weight, abstract_query=abstract_query,
+                                              main_text_weight=main_text_weight, main_text_query=main_text_query,cluster_id=cluster_id)
 
         retrieved_doc_list = result_list["hits"]["hits"]
         retrieved_doc_ids = []
-        print("dd", retrieved_doc_list[0]["_id"])
+        # print("dd", retrieved_doc_list[0]["_id"])
         for i in range(len(retrieved_doc_list)):
             retrieved_doc_ids.append(retrieved_doc_list[i]["_id"])
         print("sorted retrieved doc ids are: ", retrieved_doc_ids)
         print("enter one two show URL: ")
         id = input()
-        if id in retrieved_doc_ids:
-            get_url_by_id(id)
-        # print(result_list["hits"])
-        # print(result_list["hits"]["hits"])
-        # print(result_list["hits"]["total"])
-        # print(result_list["hits"]["max_score"])
+        # if id in retrieved_doc_ids:
+        #     print("yes")
+        get_url_by_id(id)
 
-        # get_url_by_id()
 
     elif mode == -1:
         exit()

@@ -11,6 +11,7 @@ ABSTRACT = "abstract"
 CURR_LINK = "curr_link"
 OUT_LINKS = "out_links"
 DEFAULT_TYPE = "article"
+CLUSTER_ID="cluster_id"
 
 #clustering consts
 TETA = 1

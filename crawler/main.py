@@ -23,10 +23,13 @@ while (True):
     if mode == 1:
         print("enter URLs and # for end:")
         start_urls=[]
-        in_url=""
-        while(in_url !="#"):
-            in_url=input()
+        in_url = input()
+        while(in_url != "#"):
             start_urls.append(in_url)
+            in_url=input()
+        if not start_urls:
+            start_urls.append('https://fa.wikipedia.org/wiki/%D8%B3%D8%B9%D8%AF%DB%8C')
+        print start_urls
         print ("enter out degree:")
         out_degree = int(input())
         print("enter number of docs:")

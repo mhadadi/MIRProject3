@@ -32,3 +32,7 @@ def get_doc_id_list():
 
 def get_total_count_num():
     return len(get_doc_id_list())
+
+
+def get_url_by_id(id):
+    return ES_CLIENT.get(index=INDEX_NAME, doc_type=DEFAULT_TYPE, id=id)["_source"][CURR_LINK]

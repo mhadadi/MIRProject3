@@ -1,7 +1,6 @@
 from clustering import clustering
 from constants import *
 from crawler.spiders.wiki_link_spider import WikiLinkSpider
-from vector_creator import *
 from index import make_index, delet_index
 # from clustering import clustering
 from scrapy.crawler import CrawlerProcess
@@ -29,7 +28,7 @@ while (True):
             in_url=input()
         if not start_urls:
             start_urls.append('https://fa.wikipedia.org/wiki/%D8%B3%D8%B9%D8%AF%DB%8C')
-        print start_urls
+        # print start_urls
         print ("enter out degree:")
         out_degree = int(input())
         print("enter number of docs:")
@@ -132,11 +131,13 @@ while (True):
         for i in range(len(retrieved_doc_list)):
             retrieved_doc_ids.append(retrieved_doc_list[i]["_id"])
         print("sorted retrieved doc ids are: ", retrieved_doc_ids)
+        for i in range(len(retrieved_doc_list)):
+          print(retrieved_doc_list[i]["_source"])
         print("enter one two show URL: ")
         id = input()
         # if id in retrieved_doc_ids:
         #     print("yes")
-        get_url_by_id(id)
+        print(get_url_by_id(id))
 
 
     elif mode == -1:

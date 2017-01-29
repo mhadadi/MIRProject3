@@ -57,7 +57,7 @@ def compute_best_k(k_upper_bound, theta, landa, alpha, tf_vector):
         cost_list.append(j_cost)
         prev_clusters = clusters
         k += 1
-    print ("no expected clustering in this range of k, please increase upper bound.")
+    print ("no expected clustering in this range of k, k* is k upper bound")
     return clusters, k_upper_bound, cost_list
 
 

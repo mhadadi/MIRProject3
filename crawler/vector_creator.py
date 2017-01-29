@@ -29,7 +29,7 @@ def get_doc_term_frequency(doc_id, doc_type):
         # print(tmp_dic)
         return {doc_id: tmp_dic}
     else:
-        print ("no term vectors ", str(doc_id))
+        ########## print ("no term vectors ", str(doc_id))
         return {doc_id: {}}
     # .get(index=INDEX,id=doc_id,doc_type=doc_type,params=)
 
@@ -48,27 +48,3 @@ def create_tf_vectors():
 
 
 
-
-# ###TODO:  TEEEESSSSSTTTTTTT
-# def create_doc_term_matrix():
-#     matrix={}
-#     for doc_id in range(1,20):#TODO: MAP_ID_TO_URL.keys():
-#         count=0
-#         print("doc id: ", doc_id)
-#         tf_dic = get_doc_term_frequency(doc_id,DEFAULT_TYPE)
-#         tmp_list = []
-#         for i in range(len(VOCAB)):
-#             print ("VOCAB{i}: ",VOCAB[i])
-#             if VOCAB[i] in tf_dic:
-#                 print ("tf[...]: ", tf_dic[VOCAB[i]])
-#
-#                 tmp_list.append(tf_dic[VOCAB[i]])
-#                 count += tf_dic[VOCAB[i]]
-#
-#             else:
-#                 tmp_list.append(0)
-#             # tmp_list[i] = tf_dic[VOCAB[i]]
-#         print tmp_list
-#         print count
-#         matrix.update({doc_id: tmp_list})
-#     return matrix

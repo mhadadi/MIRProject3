@@ -44,8 +44,8 @@ class WikiLinkSpider(scrapy.Spider):
             paragraphs = content_text.find_all('p')
             links = content_text.find_all('a')
             for link in links:
-                print("link text", link.text)
-                if link.parent.name=="p" and self.ok_link(link.text):
+                # print("link text", link.text)
+                if link.parent.name=="p" :
                     out_link=link.get('href')
                     out_links.append(response.urljoin(out_link))
             info = content_text.find(attrs={'class': 'infobox'})
@@ -65,14 +65,22 @@ class WikiLinkSpider(scrapy.Spider):
                 # print("parent of link: ", [parent.name for parent in link.parents])
                 # print("count " ,  self.count)
                 if link.parent.name == 'p':
-                    next_page = link.get('href')
-                    out_degree += 1
-                    if self.crawler.stats.get_stats()['response_received_count'] < self.COUNT_MAX:
-                        out_links.append(response.urljoin(next_page))
-                        yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
+                    # if ':' in link.text:
+                    #     print("linnnk hasssss :", link.text)
+                    if not(':' in link.text) and not('۰' in link.text) and not('۱' in link.text) \
+                            and not ('۲' in link.text) and not('۳' in link.text) \
+                            and not ('۴' in link.text) and not('۵' in link.text) \
+                            and not ('۶' in link.text) and not('۷' in link.text) \
+                            and not ('۸' in link.text) and not('۹' in link.text)\
+                            and (link.get('href') is not None) and ('wiki' in link.get('href')):
+                        next_page = link.get('href')
+                        out_degree += 1
+                        if self.crawler.stats.get_stats()['response_received_count'] < self.COUNT_MAX:
+                            out_links.append(response.urljoin(next_page))
+                            yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
 
-                    if out_degree >= self.OUT_MAX:
-                        break
+                        if out_degree >= self.OUT_MAX:
+                            break
 
             info_box = {}
             if info:
@@ -106,10 +114,7 @@ class WikiLinkSpider(scrapy.Spider):
                 print("crawling progress:",progressbar)
 
             self.save_data_as_json(data=data)
+    #
+    # def has_num(link):
+    #     return any(i.isdigit() for i in link)
 
-    def ok_link(link):
-        if link is not "":
-            if not( any(i.isdigit() for i in link)):
-                if not (":" in link):
-                    return True
-        return False

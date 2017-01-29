@@ -64,14 +64,17 @@ class WikiLinkSpider(scrapy.Spider):
                 # print("parent of link: ", [parent.name for parent in link.parents])
                 # print("count " ,  self.count)
                 if link.parent.name == 'p':
-                    next_page = link.get('href')
-                    out_degree += 1
-                    if self.crawler.stats.get_stats()['response_received_count'] < self.COUNT_MAX:
-                        out_links.append(response.urljoin(next_page))
-                        yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
+                    # if ':' in link.text:
+                    #     print("linnnk hasssss :", link.text)
+                    if (':' not in link.text) and (link.get('href') is not None) and ('wiki' in link.get('href')):
+                        next_page = link.get('href')
+                        out_degree += 1
+                        if self.crawler.stats.get_stats()['response_received_count'] < self.COUNT_MAX:
+                            out_links.append(response.urljoin(next_page))
+                            yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
 
-                    if out_degree >= self.OUT_MAX:
-                        break
+                        if out_degree >= self.OUT_MAX:
+                            break
 
             info_box = {}
             if info:

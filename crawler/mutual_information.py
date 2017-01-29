@@ -32,21 +32,19 @@ def compute_mutual_information(clusters,tf_vector):
                 if doc_id in in_cluster_doc_id_list:
                     if vocab in tf_vector[doc_id].keys():  # doc kalame t ra darad va dar khushe c hast
                         p_t_1_c_1 += 1
-
-                    # p_t_0_c_1 is ready for vocab
-                    p_t_0_c_1 = (count_cluster_doc - p_t_1_c_1) / count_total_doc
-                    # p_T_1_C_1 is ready for vocab!
-                    p_t_1_c_1 /= count_total_doc
-
                 else:
                     if vocab in tf_vector[doc_id].keys():
                         p_t_1_c_0 += 1
 
-                    # p_t_0_c_0 is ready for vocab
-                    count_not_in_cluster_doc = count_total_doc - count_cluster_doc
-                    p_t_0_c_0 = (count_not_in_cluster_doc - p_t_1_c_0) / count_total_doc
-                    # p_T_1_C_1 is ready for vocab!
-                    p_t_1_c_0 /= count_total_doc
+            # p_t_0_c_1 is ready for vocab
+            p_t_0_c_1 = (count_cluster_doc - p_t_1_c_1) / count_total_doc
+            # p_T_1_C_1 is ready for vocab!
+            p_t_1_c_1 /= count_total_doc
+            # p_t_0_c_0 is ready for vocab
+            count_not_in_cluster_doc = count_total_doc - count_cluster_doc
+            p_t_0_c_0 = (count_not_in_cluster_doc - p_t_1_c_0) / count_total_doc
+            # p_T_1_C_1 is ready for vocab!
+            p_t_1_c_0 /= count_total_doc
 
             p_t_1 = count_doc_has_vocab/count_total_doc
 
@@ -61,14 +59,15 @@ def compute_mutual_information(clusters,tf_vector):
                 I.update({cluster_id: {vocab: 0}})  # TODO
             if vocab not in I[cluster_id]:
                 I[cluster_id].update({vocab: 0})
-            I[cluster_id][vocab] += ((p_t_1_c_1 + log(p_t_1_c_1/(p_t_1 * p_c_1), 2) if p_t_1_c_1 else 0) +
-                                     (p_t_1_c_0 + log(p_t_1_c_0/((1-p_c_1) * p_t_1), 2) if p_t_1_c_0 else 0) +
-                                     (p_t_0_c_1 + log(p_t_0_c_1/((1-p_t_1) * p_c_1), 2) if p_t_0_c_1 else 0) +
-                                     (p_t_0_c_0 + log(p_t_0_c_0/((1-p_t_1)*(1-p_c_1)), 2) if p_t_0_c_0 else 0))
+            I[cluster_id][vocab] += (((p_t_1_c_1 * log(p_t_1_c_1/(p_t_1 * p_c_1), 2)) if p_t_1_c_1 else 0) +
+                                     ((p_t_1_c_0 * log(p_t_1_c_0/((1-p_c_1) * p_t_1), 2)) if p_t_1_c_0 else 0) +
+                                     ((p_t_0_c_1 * log(p_t_0_c_1/((1-p_t_1) * p_c_1), 2)) if p_t_0_c_1 else 0) +
+                                     ((p_t_0_c_0 * log(p_t_0_c_0/((1-p_t_1)*(1-p_c_1)), 2)) if p_t_0_c_0 else 0))
 
 
             # print ("I(c,t): ", I[cluster_id][vocab])
 
+        # print("I:",cluster_id, I[cluster_id])
         five_most_common.update({cluster_id: dict(Counter(I[cluster_id]).most_common(5))})
         # print ("5 most common for cluster ",cluster_id,": ", five_most_common[cluster_id]
         # print(convert_dic_to_string(five_most_common[cluster_id]))

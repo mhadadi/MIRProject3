@@ -90,6 +90,8 @@ def compute_distance(vector, miu):
 
 # todo: test!
 def compute_mean(cluster_doc_ids_list, tf_vector):
+    if not cluster_doc_ids_list:
+        return {}
     miu = dict()
     c_len = float(len(cluster_doc_ids_list))
     # compute sum of tf's for doc in this cluster
@@ -153,9 +155,9 @@ def k_means(k, theta, tf_vector):
                 miu_i = compute_mean(clusters[cluster_id], tf_vector)
                 # update means...
                 mean_points[cluster_id] = miu_i
-            # empty cluster!
-            else:
-                mean_points[cluster_id] = None
+            # # empty cluster!
+            # else:
+            #     mean_points.append()
         iterate += 1
         # print clusters
         # print("cost in iteration " + str(iterate) + ": " + str(next_cost))

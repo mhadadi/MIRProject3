@@ -67,7 +67,6 @@ def compute_mutual_information(clusters,tf_vector):
 
             # print ("I(c,t): ", I[cluster_id][vocab])
 
-        # print("I:",cluster_id, I[cluster_id])
         five_most_common.update({cluster_id: dict(Counter(I[cluster_id]).most_common(5))})
         # print ("5 most common for cluster ",cluster_id,": ", five_most_common[cluster_id]
         # print(convert_dic_to_string(five_most_common[cluster_id]))

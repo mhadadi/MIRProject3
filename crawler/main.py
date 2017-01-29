@@ -153,7 +153,7 @@ while True:
         #   print(retrieved_doc_list[i]["_source"])
         print("enter one two show URL: ")
         id = input()
-        while id not in retrieved_doc_ids:
+        while id not in retrieved_doc_ids and retrieved_doc_ids:
             print("enter valid doc_id from list")
             id = input()
             if id == -1 or id == '-1':

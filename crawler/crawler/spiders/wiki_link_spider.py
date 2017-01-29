@@ -44,7 +44,8 @@ class WikiLinkSpider(scrapy.Spider):
             paragraphs = content_text.find_all('p')
             links = content_text.find_all('a')
             for link in links:
-                if link.parent.name=="p":
+                print("link text", link.text)
+                if link.parent.name=="p" and self.ok_link(link.text):
                     out_link=link.get('href')
                     out_links.append(response.urljoin(out_link))
             info = content_text.find(attrs={'class': 'infobox'})
@@ -106,3 +107,9 @@ class WikiLinkSpider(scrapy.Spider):
 
             self.save_data_as_json(data=data)
 
+    def ok_link(link):
+        if link is not "":
+            if not( any(i.isdigit() for i in link)):
+                if not (":" in link):
+                    return True
+        return False

@@ -61,10 +61,10 @@ def compute_mutual_information(clusters,tf_vector):
                 I.update({cluster_id: {vocab: 0}})  # TODO
             if vocab not in I[cluster_id]:
                 I[cluster_id].update({vocab: 0})
-            I[cluster_id][vocab] += ((p_t_1_c_1 + log(p_t_1_c_1/(p_t_1 * p_c_1), 2) if p_t_1_c_1 else 0) +
-                                     (p_t_1_c_0 + log(p_t_1_c_0/((1-p_c_1) * p_t_1), 2) if p_t_1_c_0 else 0) +
-                                     (p_t_0_c_1 + log(p_t_0_c_1/((1-p_t_1) * p_c_1), 2) if p_t_0_c_1 else 0) +
-                                     (p_t_0_c_0 + log(p_t_0_c_0/((1-p_t_1)*(1-p_c_1)), 2) if p_t_0_c_0 else 0))
+            I[cluster_id][vocab] += ((p_t_1_c_1 * log(p_t_1_c_1/(p_t_1 * p_c_1), 2) if p_t_1_c_1 else 0) +
+                                     (p_t_1_c_0 * log(p_t_1_c_0/((1-p_c_1) * p_t_1), 2) if p_t_1_c_0 else 0) +
+                                     (p_t_0_c_1 * log(p_t_0_c_1/((1-p_t_1) * p_c_1), 2) if p_t_0_c_1 else 0) +
+                                     (p_t_0_c_0 * log(p_t_0_c_0/((1-p_t_1)*(1-p_c_1)), 2) if p_t_0_c_0 else 0))
 
 
             # print ("I(c,t): ", I[cluster_id][vocab])

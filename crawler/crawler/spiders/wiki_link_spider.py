@@ -65,8 +65,6 @@ class WikiLinkSpider(scrapy.Spider):
                 # print("parent of link: ", [parent.name for parent in link.parents])
                 # print("count " ,  self.count)
                 if link.parent.name == 'p':
-                    # if ':' in link.text:
-                    #     print("linnnk hasssss :", link.text)
                     if not(':' in link.text) and not('۰' in link.text) and not('۱' in link.text) \
                             and not ('۲' in link.text) and not('۳' in link.text) \
                             and not ('۴' in link.text) and not('۵' in link.text) \
